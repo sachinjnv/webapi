@@ -1,0 +1,95 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>GitHub Repositories Fetcher</title>  
+    <style>body {  
+        font-family: Arial, sans-serif;  
+        background-color: #f4f4f4;  
+        display: flex;  
+        justify-content: center;  
+        align-items: center;  
+        height: 100vh;  
+        margin: 0;  
+    }  
+    
+    .container {  
+        background: white;  
+        padding: 20px;  
+        border-radius: 5px;  
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);  
+        text-align: center;  
+    }  
+    
+    input[type="text"] {  
+        padding: 10px;  
+        margin-right: 5px;  
+        border: 1px solid #ccc;  
+        border-radius: 4px;  
+    }  
+    
+    button {  
+        padding: 10px 15px;  
+        border: none;  
+        background-color: #28a745;  
+        color: white;  
+        border-radius: 4px;  
+        cursor: pointer;  
+    }  
+    
+    button:hover {  
+        background-color: #218838;  
+    }
+    </style> 
+</head>  
+<body>  
+    <div class="container">  
+        <form id="github-form">  
+            <input type="text" id="github-username" placeholder="Github username..." required>  
+            <button type="submit">Submit</button>  
+        </form>  
+        <ul id="repo-list"></ul>  
+    </div>  
+    <script>
+
+document.getElementById('github-form').addEventListener('submit', function(event) {  
+    event.preventDefault(); // Prevent the form from submitting  
+
+    const username = document.getElementById('github-username').value; // Get the username from input  
+    const url = `https://api.github.com/users/${username}/repos`; // Create URL for the API  
+
+    // Make a GET request using fetch  
+    fetch(url)  
+        .then(response => {  
+            if (!response.ok) {  
+                throw new Error('Network response was not ok');  
+            }  
+            return response.json(); // Parse the JSON from the response  
+        })  
+        .then(data => {  
+            const repoList = document.getElementById('repo-list');  
+            repoList.innerHTML = ''; // Clear the list before displaying new results  
+
+            if (data.length === 0) {  
+                repoList.innerHTML = '<li>No repositories found.</li>'; // Show message if no repos found  
+                return;  
+            }  
+
+            
+            data.forEach(repo => {  
+                const listItem = document.createElement('li');  
+                listItem.textContent = repo.name;  
+                listItem.addEventListener('click', () => {  
+                    window.open(repo.html_url, '_blank');   
+                });  
+                repoList.appendChild(listItem);  
+            });  
+        })  
+        .catch(error => {  
+            console.error('There was a problem with the fetch operation:', error);  
+        });  
+});
+    </script>  
+</body>  
+</html>
